@@ -1,0 +1,190 @@
+1. Clase HashMap
+Esta clase crea y maneja un mapa hash. Tiene métodos para agregar, obtener, eliminar, verificar y limpiar datos.
+
+2. Constructor
+javascript
+Copy code
+constructor(size = 16) {
+  this.buckets = [];
+  for (let i = 0; i < size; i++) {
+    this.buckets.push([]); // Añade un array vacío para cada "cubo"
+  }
+  this.size = 0; // Número de elementos en el mapa
+}
+Propósito: Configura los cubos (buckets) donde se almacenarán los datos.
+Funcionamiento:
+Crea un array this.buckets de tamaño size (por defecto, 16).
+Cada elemento de this.buckets es un array vacío que servirá como un cubo para almacenar pares clave-valor.
+this.size lleva la cuenta de cuántos pares clave-valor hay en el mapa.
+3. Método hash(key)
+javascript
+Copy code
+hash(key) {
+  let hashCode = 0;
+  for (let i = 0; i < key.length; i++) {
+    hashCode += key.charCodeAt(i); // Suma los valores ASCII de los caracteres
+  }
+  return hashCode % this.buckets.length; // Ajusta al tamaño de los cubos
+}
+Propósito: Convierte una clave (string) en un índice numérico que indica en qué cubo almacenar el dato.
+Funcionamiento:
+Calcula un número (hashCode) sumando los códigos ASCII de los caracteres de la clave.
+Ajusta el resultado (hashCode % this.buckets.length) para asegurarse de que esté dentro del rango de índices válidos de los cubos.
+4. Método set(key, value)
+javascript
+Copy code
+set(key, value) {
+  const index = this.hash(key);
+  const bucket = this.buckets[index];
+
+  for (let entry of bucket) {
+    if (entry.key === key) {
+      entry.value = value; // Actualiza el valor
+      return;
+    }
+  }
+
+  bucket.push({ key, value });
+  this.size++;
+}
+Propósito: Agrega o actualiza un par clave-valor en el mapa.
+Funcionamiento:
+Calcula el índice del cubo con hash(key).
+Busca en el cubo si la clave ya existe:
+Sí: Actualiza el valor.
+No: Agrega un nuevo objeto { key, value } al cubo y aumenta this.size.
+5. Método get(key)
+javascript
+Copy code
+get(key) {
+  const index = this.hash(key);
+  const bucket = this.buckets[index];
+
+  for (let entry of bucket) {
+    if (entry.key === key) {
+      return entry.value; // Devuelve el valor
+    }
+  }
+
+  return null; // Si no lo encuentra, devuelve null
+}
+Propósito: Busca un valor dado su clave.
+Funcionamiento:
+Calcula el índice del cubo con hash(key).
+Recorre el cubo correspondiente buscando un objeto con la clave deseada.
+Devuelve el valor si lo encuentra; si no, devuelve null.
+6. Método remove(key)
+javascript
+Copy code
+remove(key) {
+  const index = this.hash(key);
+  const bucket = this.buckets[index];
+
+  for (let i = 0; i < bucket.length; i++) {
+    if (bucket[i].key === key) {
+      bucket.splice(i, 1); // Elimina el elemento
+      this.size--;
+      return true; // Confirma la eliminación
+    }
+  }
+
+  return false; // No se encontró la clave
+}
+Propósito: Elimina un par clave-valor del mapa.
+Funcionamiento:
+Calcula el índice del cubo con hash(key).
+Busca la clave en el cubo.
+Si la encuentra:
+La elimina con splice.
+Reduce this.size.
+Devuelve true.
+Si no la encuentra, devuelve false.
+7. Método has(key)
+javascript
+Copy code
+has(key) {
+  return this.get(key) !== null;
+}
+Propósito: Verifica si una clave existe en el mapa.
+Funcionamiento: Usa get para buscar la clave y devuelve true si encuentra un valor; de lo contrario, devuelve false.
+8. Método clear()
+javascript
+Copy code
+clear() {
+  this.buckets = Array(this.buckets.length).fill(null).map(() => []);
+  this.size = 0;
+}
+Propósito: Limpia todos los datos del mapa.
+Funcionamiento:
+Crea un nuevo array de cubos vacíos con el mismo tamaño que el actual.
+Reinicia this.size a 0.
+9. Métodos para obtener claves, valores y pares clave-valor
+keys()
+javascript
+Copy code
+keys() {
+  const keys = [];
+  for (let bucket of this.buckets) {
+    for (let entry of bucket) {
+      keys.push(entry.key);
+    }
+  }
+  return keys;
+}
+Devuelve: Todas las claves como un array.
+values()
+javascript
+Copy code
+values() {
+  const values = [];
+  for (let bucket of this.buckets) {
+    for (let entry of bucket) {
+      values.push(entry.value);
+    }
+  }
+  return values;
+}
+Devuelve: Todos los valores como un array.
+entries()
+javascript
+Copy code
+entries() {
+  const entries = [];
+  for (let bucket of this.buckets) {
+    for (let entry of bucket) {
+      entries.push([entry.key, entry.value]);
+    }
+  }
+  return entries;
+}
+Devuelve: Todos los pares clave-valor como un array de arrays.
+10. Pruebas
+Agregar datos:
+
+javascript
+Copy code
+test.set('apple', 'red');
+Guarda "apple": "red" en el mapa.
+
+Sobrescribir datos:
+
+javascript
+Copy code
+test.set('apple', 'green');
+Actualiza el valor de "apple" a "green".
+
+Buscar datos:
+
+javascript
+Copy code
+console.log(test.get('apple')); // 'green'
+Eliminar datos:
+
+javascript
+Copy code
+test.remove('banana');
+Obtener todas las claves, valores o pares:
+
+javascript
+Copy code
+console.log(test.keys()); // ['apple', 'grape']
